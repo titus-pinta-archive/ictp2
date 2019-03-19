@@ -116,7 +116,7 @@ def main():
 
     save_dir = 'results/{}'.format(str(datetime.datetime.now()).replace(' ', '-')
                                     .replace('.', '-').replace(':', '-'))
-    view.gfx(save_result, save_name)
+    view.gfx(save_result, save_dir)
 
     save_option = input('Save data? (y)es/(n)o ')
 
