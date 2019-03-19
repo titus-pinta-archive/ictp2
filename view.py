@@ -6,7 +6,7 @@ def gfx(save_result, save_name):
     n = args.epochs
     xaxis = np.linspace(1, n, n)
 
-    if (args.fash and args.cifar10):
+    if not (args.fash and args.cifar10):
         dataset = 'MNIST'
     elif args.fash:
         dataset = 'MNISTFashion'
