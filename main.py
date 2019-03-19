@@ -114,13 +114,18 @@ def main():
                    'train_correct': train_correct, 'test_correct': test_correct}
 
 
-    save_name = 'results/{}.result'.format(str(datetime.datetime.now()).replace(' ', '-')
+    save_dir = 'results/{}'.format(str(datetime.datetime.now()).replace(' ', '-')
                                     .replace('.', '-').replace(':', '-'))
-
-    with open(save_name, 'wb') as f:
-        dill.dump(save_result, f)
-
     view.gfx(save_result, save_name)
+
+    save_option = input('Save data? (y)es/(n)o ')
+
+    if save_option == 'y':
+        os.mkdirs(save_dir)
+        save_name = save_dir + '/data.result'
+        with open(save_name, 'wb') as f:
+            dill.dump(save_result, f)
+
 
 if __name__ == '__main__':
     main()

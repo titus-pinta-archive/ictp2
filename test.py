@@ -19,6 +19,6 @@ def test(args, model, device, test_loader, result_correct, result_loss):
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
 
-    result_correct.append(correct)
+    result_correct.append(correct / len(test_loader.dataset))
     result_loss.append(test_loss)
 
