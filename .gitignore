@@ -3,7 +3,6 @@
 *__pychache__
 *.pyc
 *.part
-results
 results/*
 data
 data/*
