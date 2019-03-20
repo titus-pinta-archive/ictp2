@@ -33,6 +33,10 @@ def main():
                         help='q parameter for A5 algorithm (default: 2)')
     parser.add_argument('--k', type=float, default=5, metavar="K",
                         help='k parameter for A3/A5 algorithm (default: 5)')
+    parser.add_argument('--alpha', type=float, default=0.99, metavar='A',
+                        help='alpha parameter for the RMS running average (default: 0.99)')
+    parser.add_argument('--eps', type=float, default=1e-8, metavar='E',
+                        help='eps parameter for the RMS division by 0 correction (default: 1e-8)')
     parser.add_argument('--optim', default='SGD', help='Optimiser to use (default: SGD)')
     parser.add_argument('--no-cuda', action='store_true', default=False,
                         help='disables CUDA training')
@@ -92,10 +96,15 @@ def main():
         extra_params = {}
         if args.optim == 'SGD' and args.momentum != 0.0:
             extra_params = {'momentum': args.momentum, 'nesterov': True}
-        if args.optim == 'A3':
+        if args.optim == 'A3' or args.optim == 'A3RMS' or args.optim == 'A11' or args.optim == 'A11RMS':
             extra_params = {'k': args.k}
-        if args.optim == 'A5':
+        if args.optim == 'A5' or args.optim == 'A5RMS':
             extra_params = {'k': args.k, 'q': args.q}
+
+        if args.optim == 'A3RMS' or  args.optim == 'A5RMS' or args.optim == 'A11RMS':
+            extra_params['alpha'] = args.alpha
+            extra_params['eps'] = args.eps
+
 
         optim_class = getattr(optim, args.optim)
         optimizer = optim_class(model.parameters(), lr=args.lr, **extra_params)
