@@ -2,13 +2,16 @@ from torchvision import datasets, transforms
 import torch
 
 def dataloader(cifar10, fash, batch_size, test_batch_size, kwargs):
+    print(cifar10)
+
+
     if cifar10 and fash:
         raise ValueError('Please select only one dataset')
 
     if not cifar10:
         if fash:
             data_path = './data/fash'
-            dataset = datasets.CIFAR10
+            dataset = datasets.FashionMNIST
 
         else:
             data_path = './data/mnist'
@@ -27,9 +30,10 @@ def dataloader(cifar10, fash, batch_size, test_batch_size, kwargs):
                                transforms.Normalize((0.1307,), (0.3081,))
                            ])),
             batch_size=test_batch_size, shuffle=True, **kwargs)
+        print(train_loader.dataset)
+
 
     else:
-
         transform_train = transforms.Compose([
             transforms.RandomCrop(32, padding=4),
             transforms.RandomHorizontalFlip(),
@@ -47,4 +51,7 @@ def dataloader(cifar10, fash, batch_size, test_batch_size, kwargs):
         test_loader = torch.utils.data.DataLoader(testset, batch_size=test_batch_size,
                                                   shuffle=False, **kwargs)
 
+
+    print(train_loader.dataset)
+    exit()
     return train_loader, test_loader

@@ -38,7 +38,9 @@ def main():
                         help='alpha parameter for the RMS running average (default: 0.99)')
     parser.add_argument('--eps', type=float, default=1e-8, metavar='E',
                         help='eps parameter for the RMS division by 0 correction (default: 1e-8)')
-    parser.add_argument('--optim', default='SGD', help='Optimiser to use (default: SGD)')
+    parser.add_argument('--optim', default='SGD', help='Optimiser to use (default: SGD)', metavar='O')
+    parser.add_argument('--loss', default='', metavar='L', help=
+                        'Loss function (default: nll for MNIST, cross-entropy for cifar10')
     parser.add_argument('--no-cuda', action='store_true', default=False,
                         help='disables CUDA training')
     parser.add_argument('--seed', type=int, default=1, metavar='S',
@@ -71,7 +73,7 @@ def main():
     device = torch.device('cuda' if use_cuda else 'cpu')
     kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
 
-    train_loader, test_loader = dataloader.dataloader(args.fash, args.cifar10,
+    train_loader, test_loader = dataloader.dataloader(args.cifar10, args.fash,
                                                       args.batch_size, args.test_batch_size,
                                                      kwargs)
 
@@ -131,7 +133,7 @@ def main():
     save_option = input('Save data? (y)es/(n)o ')
 
     if save_option == 'y':
-        os.mkdirs(save_dir)
+        os.makedirs(save_dir)
         save_name = save_dir + '/data.result'
         with open(save_name, 'wb') as f:
             dill.dump(save_result, f)
