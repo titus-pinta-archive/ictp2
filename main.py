@@ -105,7 +105,7 @@ def main():
     test_correct = []
     train_loss = []
     test_loss = []
-
+    print('Gradient is computed {}stochastically'.format('' if args.stoch else 'non-'))
 
     model.to(device)
     try:
