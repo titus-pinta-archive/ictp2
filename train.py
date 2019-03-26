@@ -49,7 +49,7 @@ def train_stoch(args, model, device, loss_function, train_loader, optimizer, epo
     result_correct.append(train_correct / len(train_loader.dataset))
 
 def train_non_stoch(args, model, device, loss_function, train_loader, optimizer,
-                    epoch, result_correct, result_loss):
+                    epoch, result_correct, result_loss, scatter):
     closure_calls = 0
     train_loss = 0
     num_loss = 0
@@ -68,6 +68,11 @@ def train_non_stoch(args, model, device, loss_function, train_loader, optimizer,
         for batch_idx, (data, target) in enumerate(train_loader):
             data, target = data.to(device), target.to(device)
             output = model(data)
+
+            if scatter:
+                #TODO scatter
+                target.scatter_(0, torch.Tensor([0]), 10)
+
             loss = loss_function(output, target)
             loss.backward()
             train_loss += loss.item()
