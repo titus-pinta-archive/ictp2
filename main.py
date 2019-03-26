@@ -45,7 +45,7 @@ def main():
     parser.add_argument('--eps', type=float, default=1e-8, metavar='E',
                         help='eps parameter for the RMS division by 0 correction (default: 1e-8)')
     parser.add_argument('--optim', default='SGD', help='Optimiser to use (default: SGD)', metavar='O')
-    parser.add_argument('--loss', default='NLLLoss', metavar='L', help=
+    parser.add_argument('--loss', default=None, metavar='L', help=
                         'Loss function (default: nll for MNIST, cross-entropy for cifar10')
     parser.add_argument('--no-cuda', action='store_true', default=False,
                         help='disables CUDA training')
@@ -130,18 +130,27 @@ def main():
         raise ValueError('Undefined Optimiser: {}'.format(args.optim))
 
     try:
+        if args.loss is None:
+            args.loss = 'CrossEntropyLoss' if args.cifar10 else 'NLLLoss'
         if 'Loss' not in args.loss:
             raise ValueError('Undefined Loss: {}'.format(args.loss))
         loss_class = getattr(torch.nn, args.loss)
         loss_function = loss_class()
         print('Loss function is: {}'.format(str(loss_function)))
+
+        if args.loss in ['MSELoss']:
+            scatter = True
+        else:
+            scatter = False
+
     except Exception as e:
         print(e)
         raise ValueError('Undefined Loss: {}'.format(args.loss))
 
     for epoch in range(1, args.epochs + 1):
-        train(args, model, device, loss_function, train_loader, optimizer, epoch, train_correct, train_loss)
-        test(args, model, device, test_loader, test_correct, test_loss)
+        train(args, model, device, loss_function, train_loader, optimizer, epoch, train_correct,
+              train_loss, scatter)
+        test(args, model, device, test_loader, test_correct, test_loss, scatter)
 
 
     save_result = {'optim': optimizer, 'model': model.state_dict, 'args': args,

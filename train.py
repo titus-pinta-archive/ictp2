@@ -2,8 +2,8 @@ import torch
 import torch.nn.functional as F
 
 
-def train_stoch(args, model, device, loss_function, train_loader, optimizer, epoch, result_correct, result_loss):
-    print('Gradient is computed stochastically')
+def train_stoch(args, model, device, loss_function, train_loader, optimizer, epoch, result_correct,
+                result_loss, scatter):
 
     model.train()
     train_loss = 0;
@@ -26,6 +26,10 @@ def train_stoch(args, model, device, loss_function, train_loader, optimizer, epo
             data, target = data.to(device), target.to(device)
             optimizer.zero_grad()
             output = model(data)
+
+            if scatter:
+                target.scatter_(10)
+
             loss = loss_function(output, target)
             loss.backward()
             train_loss += loss.item()
@@ -46,8 +50,6 @@ def train_stoch(args, model, device, loss_function, train_loader, optimizer, epo
 
 def train_non_stoch(args, model, device, loss_function, train_loader, optimizer,
                     epoch, result_correct, result_loss):
-    print('Gradient is computed non-stochastically')
-    print(loss_function)
     closure_calls = 0
     train_loss = 0
     num_loss = 0
