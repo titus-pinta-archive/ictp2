@@ -52,6 +52,4 @@ def dataloader(cifar10, fash, batch_size, test_batch_size, kwargs):
                                                   shuffle=False, **kwargs)
 
 
-    print(train_loader.dataset)
-    exit()
     return train_loader, test_loader
