@@ -17,6 +17,12 @@ from train import *
 
 import view
 
+#TODO bug list
+# multi loss
+# A3RMS A5RMS
+# A11 A11RMS
+# lossu nu oscileaza
+
 def main():
     #Training settings
     parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
@@ -39,7 +45,7 @@ def main():
     parser.add_argument('--eps', type=float, default=1e-8, metavar='E',
                         help='eps parameter for the RMS division by 0 correction (default: 1e-8)')
     parser.add_argument('--optim', default='SGD', help='Optimiser to use (default: SGD)', metavar='O')
-    parser.add_argument('--loss', default='', metavar='L', help=
+    parser.add_argument('--loss', default='NLLLoss', metavar='L', help=
                         'Loss function (default: nll for MNIST, cross-entropy for cifar10')
     parser.add_argument('--no-cuda', action='store_true', default=False,
                         help='disables CUDA training')
@@ -52,6 +58,7 @@ def main():
     parser.add_argument('--cifar10', action='store_true', default=False, help='Use Cifar10 not MNIST')
     parser.add_argument('--fash', action='store_true', default=False, help='Use MNIST fashion not MNIST')
     parser.add_argument('--optimhelp', default=False, action='store_true', help='Print optim options')
+    parser.add_argument('--losshelp', default=False, action='store_true', help='Print loss options')
 
     args = parser.parse_args()
 
@@ -61,7 +68,13 @@ def main():
             if '_' not in option:
                 print(option)
         exit()
-    print('Gradient is computed {}'.format('stochastically' if args.stoch else 'non stochastically'))
+    if args.losshelp:
+        losses = dir(torch.nn)
+        for option in losses:
+            if 'Loss' in option:
+                print(option)
+        exit()
+
     print('Will train for {} epochs with a batch size of {}'.format(args.epochs, args.batch_size))
     if(args.stoch):
         train = train_stoch
@@ -116,8 +129,18 @@ def main():
         print(e)
         raise ValueError('Undefined Optimiser: {}'.format(args.optim))
 
+    try:
+        if 'Loss' not in args.loss:
+            raise ValueError('Undefined Loss: {}'.format(args.loss))
+        loss_class = getattr(torch.nn, args.loss)
+        loss_function = loss_class()
+        print('Loss function is: {}'.format(str(loss_function)))
+    except Exception as e:
+        print(e)
+        raise ValueError('Undefined Loss: {}'.format(args.loss))
+
     for epoch in range(1, args.epochs + 1):
-        train(args, model, device, train_loader, optimizer, epoch, train_correct, train_loss)
+        train(args, model, device, loss_function, train_loader, optimizer, epoch, train_correct, train_loss)
         test(args, model, device, test_loader, test_correct, test_loss)
 
 

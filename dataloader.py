@@ -2,8 +2,6 @@ from torchvision import datasets, transforms
 import torch
 
 def dataloader(cifar10, fash, batch_size, test_batch_size, kwargs):
-    print(cifar10)
-
 
     if cifar10 and fash:
         raise ValueError('Please select only one dataset')
@@ -30,7 +28,6 @@ def dataloader(cifar10, fash, batch_size, test_batch_size, kwargs):
                                transforms.Normalize((0.1307,), (0.3081,))
                            ])),
             batch_size=test_batch_size, shuffle=True, **kwargs)
-        print(train_loader.dataset)
 
 
     else:
@@ -52,4 +49,5 @@ def dataloader(cifar10, fash, batch_size, test_batch_size, kwargs):
                                                   shuffle=False, **kwargs)
 
 
+    print(train_loader.dataset)
     return train_loader, test_loader
