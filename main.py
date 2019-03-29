@@ -16,6 +16,7 @@ from test import *
 from train import *
 
 import view
+import pdb
 
 #TODO bug list
 # multi loss
