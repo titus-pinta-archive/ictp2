@@ -1,5 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
+sns.set()
+
 
 def gfx(save_result, save_name):
     args = save_result['args']
@@ -14,14 +17,14 @@ def gfx(save_result, save_name):
         dataset = 'Cifar10'
 
     plt.figure()
-    plt.plot(xaxis, save_result['train_correct'], 'r', xaxis, save_result['test_correct'], 'b')
+    plt.plot(xaxis, save_result['train_correct'], 'r', xaxis, save_result['test_correct'], 'bo-')
     plt.legend(['Train Correct', 'Test Correct'])
     plt.title(dataset + ' ' + save_result['args'].optim + ' Accuracy')
     plt.xlabel('Epochs')
     plt.ylabel('Acccuracy')
 
     plt.figure()
-    plt.plot(xaxis, save_result['train_loss'], 'r', xaxis, save_result['test_loss'], 'b')
+    plt.plot(xaxis, save_result['train_loss'], 'r', xaxis, save_result['test_loss'], 'bo-')
     plt.legend(['Train Loss', 'Test Loss'])
     plt.title(dataset + ' ' + save_result['args'].optim + ' Loss')
     plt.xlabel('Epochs')
