@@ -27,29 +27,24 @@ class A3RMS(Optimizer):
         beta = self.state['n_iter'] / (self.state['n_iter'] + 3)
 
         for group in self.param_groups:
-            lr = group['lr']
             alpha = group['alpha']
             for p in group['params']:
                 if p.grad is None:
                     continue
                 state = self.state[p]
-
                 state['avg'].mul_(alpha).addcmul_(1 - alpha, p.grad.data, p.grad.data)
-                lr = state['avg'].sqrt().add(self.state['eps']).pow(-1).mul(lr)
-                print(lr)
+                lr = state['avg'].sqrt().add(group['eps']).pow(-1).mul(group['lr'])
                 p.data = state['u'].add(state['v'].mul(lr.mul(beta)))
 
         loss = closure()
         for group in self.param_groups:
-            lr = group['lr']
             k = group['k']
             for p in group['params']:
                 if p.grad is None:
                     continue
                 state = self.state[p]
                 d_p = p.grad.data
-                print(lr)
-                lr = state['avg'].sqrt().add(self.state['eps']).pow(-1).mul(lr)
+                lr = ((state['avg'].sqrt().add(group['eps'])).pow(-1)).mul(group['lr'])
                 state['v'] = state['v'].mul(1 - lr * beta).sub(d_p.mul(lr)).mul(beta ** k)
                 state['u'].add_(p.data.sub(state['u']).mul((1 - lr * beta) * beta).sub(d_p.mul(lr ** 2)))
 
