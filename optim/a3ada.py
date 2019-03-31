@@ -2,14 +2,14 @@ import torch
 from .optimizer import Optimizer, required
 
 
-class A3RMS(Optimizer):
+class A3Ada(Optimizer):
 
-    def __init__(self, params, lr=required, k=5, alpha=0.99, eps=1e-8):
+    def __init__(self, params, lr=required, k=5, rho=0.9, eps=1e-8):
         if lr is not required and lr < 0.0:
             raise ValueError("Invalid learning rate: {}".format(lr))
 
-        defaults = dict(lr=lr, k=k, alpha=alpha, eps=eps)
-        super(A3RMS, self).__init__(params, defaults)
+        defaults = dict(lr=lr, k=k, rho=rho, eps=eps)
+        super(A3Ada, self).__init__(params, defaults)
 
         self.state['n_iter'] = 0
 
@@ -20,7 +20,7 @@ class A3RMS(Optimizer):
                 self.state[p]['avg'] = torch.zeros_like(p.data)
 
     def __setstate__(self, state):
-        super(A3RMS, self).__setstate__(state)
+        super(A3Ada, self).__setstate__(state)
 
     def step(self, closure):
         self.state['n_iter'] += 1
@@ -33,7 +33,7 @@ class A3RMS(Optimizer):
                     continue
                 state = self.state[p]
                 state['avg'].mul_(alpha).addcmul_(1 - alpha, p.grad.data, p.grad.data)
-                lr = state['avg'].add(group['eps']).sqrt().pow(-1).mul(group['lr'])
+                lr = state['avg'].sqrt().add(group['eps']).pow(-1).mul(group['lr'])
                 p.data = state['u'].add(state['v'].mul(lr.mul(beta)))
 
         loss = closure()
@@ -44,7 +44,7 @@ class A3RMS(Optimizer):
                     continue
                 state = self.state[p]
                 d_p = p.grad.data
-                lr = state['avg'].add(group['eps']).sqrt().pow(-1).mul(group['lr'])
+                lr = ((state['avg'].sqrt().add(group['eps'])).pow(-1)).mul(group['lr'])
                 state['v'] = state['v'].mul(1 - lr * beta).sub(d_p.mul(lr)).mul(beta ** k)
                 state['u'].add_(p.data.sub(state['u']).mul((1 - lr * beta) * beta).sub(d_p.mul(lr ** 2)))
 
