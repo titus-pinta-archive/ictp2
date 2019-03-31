@@ -37,10 +37,10 @@ def main():
                         help='learning rate (default: 0.00001)')
     parser.add_argument('--momentum', type=float, default=0.0, metavar='M',
                         help='SGD momentum (default: 0.0)')
-    parser.add_argument('--q', type=float, default=2, metavar='Q',
-                        help='q parameter for A5 algorithm (default: 2)')
-    parser.add_argument('--k', type=float, default=5, metavar="K",
-                        help='k parameter for A3/A5 algorithm (default: 5)')
+    parser.add_argument('--q', type=float, default=0.1, metavar='Q',
+                        help='q parameter for A5 algorithm (default: 0.01)')
+    parser.add_argument('--k', type=float, default=2, metavar="K",
+                        help='k parameter for A3/A5 algorithm (default: 2)')
     parser.add_argument('--alpha', type=float, default=0.99, metavar='A',
                         help='alpha parameter for the RMS running average (default: 0.99)')
     parser.add_argument('--eps', type=float, default=1e-8, metavar='E',
@@ -163,7 +163,7 @@ def main():
                                     .replace('.', '-').replace(':', '-'))
     view.gfx(save_result, save_dir)
 
-    save_option = input('Save data? (y)es/(n)o ')
+    save_option = 'y' #input('Save data? (y)es/(n)o ')
 
     if save_option == 'y':
         os.makedirs(save_dir)

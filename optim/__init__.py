@@ -20,6 +20,7 @@ from .a3 import A3
 from .a5 import A5
 from .a11 import A11
 from .a3rms import A3RMS
+from .a5rms import A5RMS
 from . import lr_scheduler
 
 del adadelta
@@ -37,3 +38,4 @@ del a3
 del a5
 del a11
 del a3rms
+del a5rms

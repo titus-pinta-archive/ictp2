@@ -2,13 +2,13 @@ import torch
 from .optimizer import Optimizer, required
 
 
-class A5(Optimizer):
+class A5RMS(Optimizer):
 
-    def __init__(self, params, lr=required, k=5, q=5):
+    def __init__(self, params, lr=required, k=5, q=5, alpha=0.9, eps=1e-8):
         if lr is not required and lr < 0.0:
             raise ValueError("Invalid learning rate: {}".format(lr))
-        defaults = dict(lr=lr, k=k, q=q)
-        super(A5, self).__init__(params, defaults)
+        defaults = dict(lr=lr, k=k, q=q, alpha=alpha, eps=eps)
+        super(A5RMS, self).__init__(params, defaults)
 
         self.state['n_iter'] = 0
 
@@ -16,26 +16,28 @@ class A5(Optimizer):
             for p in group['params']:
                 self.state[p]['u'] = p.data
                 self.state[p]['v'] = torch.zeros_like(p.data)
+                self.state[p]['avg'] = torch.zeros_like(p.data)
 
 
     def __setstate__(self, state):
-        super(A5, self).__setstate__(state)
+        super(A5RMS, self).__setstate__(state)
 
     def step(self, closure):
         self.state['n_iter'] += 1
         beta = self.state['n_iter'] / (self.state['n_iter'] + 3)
 
         for group in self.param_groups:
-            lr = group['lr']
+            alpha = group['alpha']
             for p in group['params']:
                 if p.grad is None:
                     continue
                 state = self.state[p]
+                state['avg'].mul_(alpha).addcmul_(1 - alpha, p.grad.data, p.grad.data)
+                lr = state['avg'].sqrt().add(group['eps']).pow(-1).mul(group['lr'])
                 p.data = state['u'].add(state['v'].mul(lr * beta))
 
         loss = closure()
         for group in self.param_groups:
-            lr = group['lr']
             k = group['k']
             q = group['q']
             for p in group['params']:
@@ -43,6 +45,7 @@ class A5(Optimizer):
                     continue
                 state = self.state[p]
                 d_p = p.grad.data
+                lr = ((state['avg'].sqrt().add(group['eps'])).pow(-1)).mul(group['lr'])
                 state['v'] = state['v'].mul((1 - lr * beta) ** q).sub(d_p.mul(lr * beta ** k))
                 state['u'].add_(p.data.sub(state['u']).mul((1 - lr * beta) / beta).sub(d_p.mul(lr ** 2)))
 
