@@ -23,6 +23,9 @@ import pdb
 # A3RMS A5RMS
 # A11 A11RMS
 # lossu nu oscileaza
+# alea cu adadelta
+# salveaza poze
+
 
 def main():
     #Training settings
