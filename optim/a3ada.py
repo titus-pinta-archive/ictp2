@@ -40,7 +40,6 @@ class A3Ada(Optimizer):
                 lr = delta.mul(group['lr'])
                 state['delta_avg'].mul_(rho).addcmul_(1 - rho, delta, delta)
                 p.data = state['u'].add(state['v'].mul(lr.mul(beta)))
-                print(lr)
 
         loss = closure()
         for group in self.param_groups:
