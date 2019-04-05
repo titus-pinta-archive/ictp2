@@ -16,18 +16,19 @@ def gfx(save_result, save_name):
     else:
         dataset = 'Cifar10'
 
-    plt.figure()
+    acc_fig = plt.figure()
     plt.plot(xaxis, save_result['train_correct'], 'rs-', xaxis, save_result['test_correct'], 'bo-')
     plt.legend(['Train Correct', 'Test Correct'])
     plt.title(dataset + ' ' + save_result['args'].optim + ' Accuracy')
     plt.xlabel('Epochs')
     plt.ylabel('Acccuracy')
 
-    plt.figure()
+    loss_fig = plt.figure()
     plt.plot(xaxis, save_result['train_loss'], 'rs-', xaxis, save_result['test_loss'], 'bo-')
     plt.legend(['Train Loss', 'Test Loss'])
     plt.title(dataset + ' ' + save_result['args'].optim + ' Loss')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
 
-    plt.show()
+    #plt.show()
+    return plt, acc_fig, loss_fig

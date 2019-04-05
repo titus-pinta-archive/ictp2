@@ -162,9 +162,9 @@ def main():
                    'train_correct': train_correct, 'test_correct': test_correct}
 
 
-    save_dir = 'results/{}'.format(str(datetime.datetime.now()).replace(' ', '-')
-                                    .replace('.', '-').replace(':', '-'))
-    view.gfx(save_result, save_dir)
+    save_dir = 'results/{}-{}-{}'.format(str(datetime.datetime.now()).replace(' ', '-')
+                                    .replace('.', '-').replace(':', '-'), args.optim, args.loss)
+    plt, acc_fig, loss_fig = view.gfx(save_result, save_dir)
 
     save_option = 'y' #input('Save data? (y)es/(n)o ')
 
@@ -173,6 +173,8 @@ def main():
         save_name = save_dir + '/data.result'
         with open(save_name, 'wb') as f:
             dill.dump(save_result, f)
+        plt.savefig(save_dir + '/acc.png', figure=acc_fig)
+        plt.savefig(save_dir + '/loss.png', figure=loss_fig)
 
 
 if __name__ == '__main__':
